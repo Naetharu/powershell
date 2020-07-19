@@ -1,4 +1,4 @@
-# Import the System.Web type
+# Import the System.Web type from MS.net - we are going to use this to generate our passwords
 Add-Type -AssemblyName 'System.Web'
 
 #1 Get users from CSV file
@@ -101,8 +101,8 @@ foreach($user in $contractList){
 
 # Print a list of all successful changes
 Write-Host "`nAccounts that have been succesfully updated: `n" -ForegroundColor Green
-$updatedUsers | Format-Table -AutoSize
-$updatedUsers | Export-Csv -Path "C:\Users\Administrator\Desktop\leavers\results\success.csv" 
+$updatedUsers | Sort-Object -Descending | Format-Table -AutoSize
+$updatedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\leavers\results\success.csv" 
 
 # Print a list of all accounts that failed
 Write-Host "`nAccounts that have not been updated: `n" -ForegroundColor Red

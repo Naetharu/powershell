@@ -1,6 +1,3 @@
-# Import the System.Web type
-Add-Type -AssemblyName 'System.Web'
-
 #1 Get users from CSV file
 $userList = Import-Csv -Path "C:\Users\Administrator\Desktop\starters\source\newuser.csv"
 
@@ -8,7 +5,7 @@ $userList = Import-Csv -Path "C:\Users\Administrator\Desktop\starters\source\new
 $contractList = $userList |
     Where-Object {$_.Contract -eq "Essex"}
 
-#3 Array to store created user objects for review
+#3 Arrays to store created, failed and password objects for review
 $createdUsers = @()
 $failedUsers = @()
 $defaultPasswords = @()
@@ -18,7 +15,6 @@ foreach($user in $contractList){
     $name = $user.name
     $surname = $user.surname
     $office = $user.office
-
     
     #4.1 Check that the user name does not conflict (consider interactive options for this in future)
     if((Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')")){
@@ -46,13 +42,22 @@ foreach($user in $contractList){
 
         # Add the custom object to the password array for procesing
         $defaultPasswords += $userpasswordlog
-        
+
+        # Find the correct OU for the new user
+        $orgUnit = "OU=Field,OU=Domain Users,DC=ad,DC=naeth,DC=com"
+
+        # Allocate OU based on office location
+        Switch($office){
+            "Field"{$orgUnit = "OU=Office,OU=Domain Users,DC=ad,DC=naeth,DC=com"; break }
+            "Office"{$orgUnit = "OU=Field,OU=Domain Users,DC=ad,DC=naeth,DC=com"; break }
+        }
+
         # Create the new user object based on the variables given - some more refinement needed here as we progress.
         $email = $accountname + "@company.com"
         $description = $user.description
         New-ADUser -Name $accountname -GivenName $name -Surname $surname -SamAccountName $accountname `
             -DisplayName "$name $surname" -UserPrincipalName $email -Office $office -Description $description `
-                -HomeDirectory H:\\directories\$accountname -Path "OU=Office,OU=Domain Users,DC=ad,DC=naeth,DC=com" `
+                -HomeDirectory H:\\directories\$accountname -Path $orgUnit `
                     -AccountPassword(ConvertTo-SecureString -AsPlainText $password -Force) -Enabled $true
 
         # Check the AD account has been created.
@@ -84,5 +89,3 @@ $defaultPasswords | Format-Table -AutoSize
 $defaultPasswords | Export-Csv -Path "C:\Users\Administrator\Desktop\starters\results\passwords.csv" 
 
 Read-Host -Prompt "Press Enter to Exit"
-
-
