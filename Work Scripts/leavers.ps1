@@ -23,8 +23,20 @@ foreach($user in $contractList){
     }
     
     # Check if the person exists in AD and if their leave date is today or earlier before proceeding
-    if(!(Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')") -or ($leaveDate -gt $today)){
-        $failedUsers += $user
+    if(!(Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')")){
+        $faillog = [PSCustomObject]@{
+            Name = "$name $surname"
+            Message = "Failed to find AD entry for this user name"
+        }
+
+        $failedUsers += $faillog
+    }elseIf($today -gt $leaveDate ){
+        $faillog = [PSCustomObject]@{
+            Name = "$name $surname"
+            Message = "User leave date is the future"
+        }
+
+        $failedUsers += $faillog
     }else{
         $currentUser = Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')" 
 
@@ -33,19 +45,54 @@ foreach($user in $contractList){
         $password = [System.Web.Security.Membership]::GeneratePassword($length, $nonAlphaChars)
 
         # Debugging line to view password in plain text
-        Write-Host "The password is $password" -ForegroundColor Cyan
-
+        try{
+            Write-Host "The password is $password" -ForegroundColor Cyan
+        }catch{
+            $faillog = [PSCustomObject]@{
+                Name = $currentUser
+                Message = "Failed attempt to update user passwor."
+            }
+        }
+        
         #3.1 - Change their password to a random value
-        Set-ADAccountPassword -Identity $currentUser -Reset -NewPassword (ConvertTo-SecureString -AsPlainText $password -Force)
+        try{
+            Set-ADAccountPassword -Identity $currentUser -Reset -NewPassword (ConvertTo-SecureString -AsPlainText $password -Force)
+        }catch{
+            $faillog = [PSCustomObject]@{
+                Name = $currentUser
+                Message = "Failed attempt to update user password."
+            }
+        }
 
         #3.2 - Disable their account
-        $currentUser | Disable-ADAccount
+        try{
+            $currentUser | Disable-ADAccount
+        }catch{
+            $faillog = [PSCustomObject]@{
+                Name = $currentUser
+                Message = "Failed to disable user account."
+            }
+        }
 
         #3.4 - Add a note to the account to explain why it has been disabled.
-        Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"} -ErrorAction Ignore
+        try{
+            Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"} -ErrorAction Ignore
+        }catch{
+            $faillog = [PSCustomObject]@{
+                Name = $currentUser
+                Message = "Failed to update user info notes."
+            }
+        }
 
         #3.3 - Move their account into the new OU
-        Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Accounts,OU=Domain Users,DC=ad,DC=naeth,DC=com"
+        try{
+            Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Accounts,OU=Domain Users,DC=ad,DC=naeth,DC=com"
+        }catch{
+            $faillog = [PSCustomObject]@{
+                Name = $currentUser
+                Message = "Failed to update user info notes."
+            }
+        }
 
         #3.5 - Log user as updated for export to .csv
         $updatedUsers += $user
@@ -54,12 +101,12 @@ foreach($user in $contractList){
 
 # Print a list of all successful changes
 Write-Host "`nAccounts that have been succesfully updated: `n" -ForegroundColor Green
-$updatedUsers
+$updatedUsers | Format-Table -AutoSize
 $updatedUsers | Export-Csv -Path "C:\Users\Administrator\Desktop\leavers\results\success.csv" 
 
 # Print a list of all accounts that failed
 Write-Host "`nAccounts that have not been updated: `n" -ForegroundColor Red
-$failedUsers
-$failedUsers | Export-Csv -Path "C:\Users\Administrator\Desktop\leavers\results\fail.csv" 
+$failedUsers | Sort-Object -Descending | Format-Table -AutoSize
+$failedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\leavers\results\fail.csv" 
 
 Read-Host -Prompt "Press Enter to Exit"
