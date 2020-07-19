@@ -30,13 +30,16 @@ foreach($user in $contractList){
         }
 
         $failedUsers += $faillog
-    }elseIf($today -gt $leaveDate ){
+
+    }elseIf($today -lt $leaveDate ){
+
         $faillog = [PSCustomObject]@{
             Name = "$name $surname"
             Message = "User leave date is the future"
         }
 
         $failedUsers += $faillog
+
     }else{
         $currentUser = Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')" 
 
@@ -44,16 +47,6 @@ foreach($user in $contractList){
         $nonAlphaChars = 8
         $password = [System.Web.Security.Membership]::GeneratePassword($length, $nonAlphaChars)
 
-        # Debugging line to view password in plain text
-        try{
-            Write-Host "The password is $password" -ForegroundColor Cyan
-        }catch{
-            $faillog = [PSCustomObject]@{
-                Name = $currentUser
-                Message = "Failed attempt to update user passwor."
-            }
-        }
-        
         #3.1 - Change their password to a random value
         try{
             Set-ADAccountPassword -Identity $currentUser -Reset -NewPassword (ConvertTo-SecureString -AsPlainText $password -Force)
@@ -76,7 +69,7 @@ foreach($user in $contractList){
 
         #3.4 - Add a note to the account to explain why it has been disabled.
         try{
-            Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"} -ErrorAction Ignore
+            Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"}
         }catch{
             $faillog = [PSCustomObject]@{
                 Name = $currentUser
@@ -90,7 +83,7 @@ foreach($user in $contractList){
         }catch{
             $faillog = [PSCustomObject]@{
                 Name = $currentUser
-                Message = "Failed to update user info notes."
+                Message = "Failed move account to disabled users OU."
             }
         }
 
