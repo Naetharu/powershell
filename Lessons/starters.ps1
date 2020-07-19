@@ -29,8 +29,26 @@ foreach($user in $contractList){
         $password = "Magic123"
         $office = "Head office"
         $email = $accountname + "@company.com"
-        $description = "Temp staff working in accounts"
-        New-ADUser -Name $accountname -GivenName $name -Surname $surname -SamAccountName $accountname -DisplayName "$name $surname" -UserPrincipalName $email -Office $office -Description $description -HomeDirectory H:\\directories\$accountname -Path "OU=Office,OU=Domain Users,DC=ad,DC=naeth,DC=com" -AccountPassword(ConvertTo-SecureString -AsPlainText $password -Force) -Enabled $true
+        $description = $user.description
+        New-ADUser -Name $accountname -GivenName $name -Surname $surname -SamAccountName $accountname `
+            -DisplayName "$name $surname" -UserPrincipalName $email -Office $office -Description $description `
+                -HomeDirectory H:\\directories\$accountname -Path "OU=Office,OU=Domain Users,DC=ad,DC=naeth,DC=com" `
+                    -AccountPassword(ConvertTo-SecureString -AsPlainText $password -Force) -Enabled $true
+
+        $createdUsers += $user
     }
 }
+
+# Print a list of all successful changes
+Write-Host "`nAccounts that have been succesfully created: `n" -ForegroundColor Green
+$createdUsers
+$createdUsers | Export-Csv -Path "C:\Users\Administrator\Desktop\starters\results\success.csv" 
+
+# Print a list of all accounts that failed
+Write-Host "`nAccounts that have not been created: `n" -ForegroundColor Red
+$failedUsers
+$failedUsers | Export-Csv -Path "C:\Users\Administrator\Desktop\starters\results\fail.csv" 
+
+Read-Host -Prompt "Press Enter to Exit"
+
 
