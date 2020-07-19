@@ -45,9 +45,10 @@ foreach($user in $contractList){
         #3.3 - Move their account into the new OU
         Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Accounts,OU=Domain Users,DC=ad,DC=naeth,DC=com"
 
-        #3.4 - Add a note to explain why this has been done
+        #3.4 - Add a note to explain why this has been done - reapeat is a quick and dirty trick to get around the issue of no notes existing
         Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"} -ErrorAction Ignore
-
+        Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"} -ErrorAction Ignore
+        
         #3.5 - Log user as updated for export to .csv
         $updatedUsers += $user
     }

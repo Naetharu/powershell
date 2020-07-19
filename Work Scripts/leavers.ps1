@@ -1,4 +1,3 @@
-
 # Import the System.Web type
 Add-Type -AssemblyName 'System.Web'
 
@@ -10,7 +9,6 @@ $contractList = $userList |
     Where-Object {$_.Contract -eq "Essex"}
 
 $updatedUsers = @()
-
 $failedUsers = @()
 
 #3 Loop through each user and process their account
@@ -43,11 +41,11 @@ foreach($user in $contractList){
         #3.2 - Disable their account
         $currentUser | Disable-ADAccount
 
+        #3.4 - Add a note to the account to explain why it has been disabled.
+        Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"} -ErrorAction Ignore
+
         #3.3 - Move their account into the new OU
         Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Accounts,OU=Domain Users,DC=ad,DC=naeth,DC=com"
-
-        #3.4 - Add a note to explain why this has been done
-        Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"} -ErrorAction Ignore
 
         #3.5 - Log user as updated for export to .csv
         $updatedUsers += $user
