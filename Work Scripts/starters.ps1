@@ -1,3 +1,4 @@
+# Import the System.Web type from MS.net - we are going to use this to generate our passwords
 Add-Type -AssemblyName 'System.Web'
 
 #1 Get users from CSV file
