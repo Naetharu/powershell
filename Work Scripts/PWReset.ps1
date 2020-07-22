@@ -9,8 +9,8 @@ if (Test-Connection naetharu.local) {
 
     # Check that session has been established. If not close gracefully.
     if (-not($session)) {
-        Write-Host "Session not established. Check your credentials and try again."
-        Read-Host "Press Enter to close the script."
+        Write-Host "Session not established. Check your credentials and try again." -ForegroundColor Red
+        Read-Host "Press Enter to Exit"
         return;
     }    
 
@@ -21,7 +21,7 @@ if (Test-Connection naetharu.local) {
         #2 Loop with break condition.
         while ($true) {
             #2 Ask the engineer for the user account name
-            $name = Read-Host -Prompt "Please Enter the users first name"
+            $name = Read-Host -Prompt "Please Enter the users first name" 
             $surname = Read-Host -Prompt "Please Enter the users surname name"
 
             #2.1 Trim any excess white space
@@ -33,18 +33,13 @@ if (Test-Connection naetharu.local) {
             $answer = Read-Host -Prompt "If this is correct please press [Y]. Else press any other key to start again."
 
             if ($answer -eq "y") { break; } 
-
-            #Debuggling line
         }
-
-        #Debuggling line
         
         #3 Locate the user in AD
         $userAccount = Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')"
 
         if (-not($userAccount)) {    
-            Write-Host "Unable to locate account for user $name $surname"
-            Read-Host "Press Enter to close the script."
+            Write-Host "Unable to locate account for user $name $surname" -ForegroundColor Red
             return;
         }    
 
@@ -64,19 +59,19 @@ if (Test-Connection naetharu.local) {
         try {
             Set-ADAccountPassword -Identity $userAccount -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$password" -Force)
             Unlock-ADAccount -Identity $userAccount 
-            Set-ADUser -Identity $userAccount -ChangePasswordAtLogon:$true
+            Set-ADUser -1Identity $userAccount -ChangePasswordAtLogon:$true
         }
         catch {
-            Write-Host "Failed while updating password."
-            Read-Host "Press Enter to close the script."
+            Write-Host "Failed while updating password." -ForegroundColor Red
+            $test = "testing"
+            $test | Export-Csv -Path "C:\Users\Administrator\Desktop\PWReset Error Logs\error.csv"
             return;
         }
         
-
         #5 Print results
         Write-Host "`The password has been changed successfully: `n" -ForegroundColor Red
         Write-Host "The new password is: "$password
-        $pwlog | Export-Csv "C:\Users\Administrator\Desktop\PWRest\logs\success.csv"
+        $pwlog | Export-Csv -path "C:\Users\Administrator\Desktop\PWRest\logs\success.csv"
     }
     Read-Host "Press enter to exit"
 }
