@@ -1,6 +1,6 @@
 #1 Import the System.Web type from MS.net - we are going to use this to generate our
 
-if(Test-Connection naetharu.local){
+if (Test-Connection naetharu.local) {
 
     $adminName = Read-Host "Please enter your admin name"
     $adminName = "naetharu.local\$adminName"
@@ -12,7 +12,7 @@ if(Test-Connection naetharu.local){
         Add-Type -AssemblyName 'System.Web'
 
         #2 Loop with break condition.
-        while($true){
+        while ($true) {
             #2 Ask the engineer for the user account name
             $name = Read-Host -Prompt "Please Enter the users first name"
             $surname = Read-Host -Prompt "Please Enter the users surname name"
@@ -25,38 +25,44 @@ if(Test-Connection naetharu.local){
             Write-Host "You have entered: "$name $surname
             $answer = Read-Host -Prompt "If this is correct please press [Y]. Else press any other key to start again."
 
-            if($answer -eq "y"){break;} 
+            if ($answer -eq "y") { break; } 
 
             #Debuggling line
-            }
-
-        #Debuggling line
-
-        #3 Locate the user in AD
-        $userAccount = Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')"
-
-        #4 Reset the users password
-        $length = 8
-        $nonAlphaChars = 1
-        $password = [System.Web.Security.Membership]::GeneratePassword($length, $nonAlphaChars)
-
-        $pwlog = [PSCustomObject]@{
-            Name = $userAccount
-            Password = $password
         }
 
-        Set-ADAccountPassword -Identity $userAccount -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$password" -Force)
-        Unlock-ADAccount -Identity $userAccount 
-        Set-ADUser -Identity $userAccount -ChangePasswordAtLogon:$true
+        #Debuggling line
+        try {
+            #3 Locate the user in AD
+            $userAccount = Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')"
 
-        #5 Print results
-        Write-Host "`The password has been changed successfully: `n" -ForegroundColor Red
-        Write-Host "The new password is: "$password
-        $pwlog | Export-Csv "C:\Users\Administrator\Desktop\PWRest\logs\success.csv"
+            #4 Reset the users password
+            #4.1 Generate a new password
+            $length = 8
+            $nonAlphaChars = 1
+            $password = [System.Web.Security.Membership]::GeneratePassword($length, $nonAlphaChars)
+
+            #4.2 Store the password in a custom PS object
+            $pwlog = [PSCustomObject]@{
+                Name     = $userAccount
+                Password = $password
+            }
+
+            #4.3 Reset the password and unlock the account
+            Set-ADAccountPassword -Identity $userAccount -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$password" -Force)
+            Unlock-ADAccount -Identity $userAccount 
+            Set-ADUser -Identity $userAccount -ChangePasswordAtLogon:$true
+
+            #5 Print results
+            Write-Host "`The password has been changed successfully: `n" -ForegroundColor Red
+            Write-Host "The new password is: "$password
+            $pwlog | Export-Csv "C:\Users\Administrator\Desktop\PWRest\logs\success.csv"
+        }
+        catch {
+            Write-Host "Failed to change password. Please check your user details are correct."
+        }
     }
-
     Read-Host "Press enter to exit"
-
-}else {
+}
+else {
     Write-Host "Connection to your domain failed - please ensure you are on domain or connected to the VPN"
 }
