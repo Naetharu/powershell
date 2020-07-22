@@ -2,7 +2,7 @@
 Add-Type -AssemblyName 'System.Web'
 
 #1 Get users from CSV file
-$userList = Import-Csv -Path "C:\Users\Administrator\Desktop\starters\source\newuser.csv"
+$userList = Import-Csv -Path "C:\Users\Administrator\Desktop\Starters\source\newuser.csv"
 
 #2 Find just the Essex users from the list
 $contractList = $userList |
@@ -51,8 +51,8 @@ foreach($user in $contractList){
 
         # Allocate OU based on office location
         Switch($office){
-            "Field"{$orgUnit = "OU=Office,OU=Domain Users,DC=ad,DC=naeth,DC=com"; break }
-            "Office"{$orgUnit = "OU=Field,OU=Domain Users,DC=ad,DC=naeth,DC=com"; break }
+            "Field"{$orgUnit = "OU=Field,OU=Domain Users,DC=Naetharu,DC=local"; break }
+            "Office"{$orgUnit = "OU=Office,OU=Domain Users,DC=Naetharu,DC=local"; break }
         }
 
         # Create the new user object based on the variables given - some more refinement needed here as we progress.
@@ -80,16 +80,16 @@ foreach($user in $contractList){
 # Print a list of all successful changes
 Write-Host "`nAccounts that have been succesfully created: `n" -ForegroundColor Green
 $createdUsers | Sort-Object -Descending | Format-Table -AutoSize
-$createdUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\starters\results\success.csv" 
+$createdUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\Starters\logs\success.csv" 
 
 # Print a list of all accounts that failed
 Write-Host "`nAccounts that have not been created: `n" -ForegroundColor Red
 $failedUsers | Sort-Object -Descending | Format-Table -AutoSize
-$failedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\starters\results\fail.csv" 
+$failedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\Starters\logs\fail.csv" 
 
 # Print a list of default passwords and their associated account - final version email these via smtp to the user's line-manager?
 Write-Host "`nDefault Password logs created: `n" -ForegroundColor Blue
 $defaultPasswords | Sort-Object -Descending | Format-Table -AutoSize
-$defaultPasswords | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\starters\results\passwords.csv" 
+$defaultPasswords | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\Starters\logs\passwords.csv" 
 
 Read-Host -Prompt "Press Enter to Exit"

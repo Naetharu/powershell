@@ -2,7 +2,7 @@
 Add-Type -AssemblyName 'System.Web'
 
 #1 Get users from CSV file
-$userList = Import-Csv -Path "C:\Users\Administrator\Desktop\leavers\source\testuser.csv"
+$userList = Import-Csv -Path "C:\Users\Administrator\Desktop\Leavers\source\testuser.csv"
 
 #2 Find just the Essex users from the list
 $contractList = $userList |
@@ -67,7 +67,7 @@ foreach($user in $contractList){
             }
         }
 
-        #3.4 - Add a note to the account to explain why it has been disabled.
+        #3.3 - Add a note to the account to explain why it has been disabled.
         try{
             Set-ADUser $currentUser -Replace @{info="$($currentUser.info) Account Disabled due to HR Reqest on $today"}
         }catch{
@@ -77,9 +77,9 @@ foreach($user in $contractList){
             }
         }
 
-        #3.3 - Move their account into the new OU
+        #3.4 - Move their account into the new OU
         try{
-            Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Accounts,OU=Domain Users,DC=ad,DC=naeth,DC=com"
+            Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Accounts,OU=Domain Users,DC=Naetharu,DC=local"
         }catch{
             $faillog = [PSCustomObject]@{
                 Name = $currentUser
@@ -95,11 +95,11 @@ foreach($user in $contractList){
 # Print a list of all successful changes
 Write-Host "`nAccounts that have been succesfully updated: `n" -ForegroundColor Green
 $updatedUsers | Sort-Object -Descending | Format-Table -AutoSize
-$updatedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\leavers\results\success.csv" 
+$updatedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\Leavers\logs\success.csv" 
 
 # Print a list of all accounts that failed
 Write-Host "`nAccounts that have not been updated: `n" -ForegroundColor Red
 $failedUsers | Sort-Object -Descending | Format-Table -AutoSize
-$failedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\leavers\results\fail.csv" 
+$failedUsers | Sort-Object -Descending | Export-Csv -Path "C:\Users\Administrator\Desktop\Leavers\logs\fail.csv" 
 
 Read-Host -Prompt "Press Enter to Exit"
