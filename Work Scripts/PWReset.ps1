@@ -2,16 +2,30 @@
 while ($true) {
     $answer = Read-Host "Press [1] for Network-1 Highways and [2] for Network-2"
 
-    if (($answer -eq "1") -or ($answer -eq "2")) { break; }
-}
+    if ($answer -eq "1") {
+        $answer = "naetharu.local"
+        break;
+    }
 
+    if ($answer -eq "2") {
+        $answer = "urahtean.local"
+        break;
+    }
+}
 
 if (Test-Connection naetharu.local) {
 
     $adminName = Read-Host "Please enter your admin name"
-    $adminName = "naetharu.local\$adminName"
+    $adminName = "$answer\$adminName"
 
-    $session = New-PSSession -ComputerName DC01 -Credential $adminName -ErrorAction SilentlyContinue
+    $DCname = ""
+
+    switch ($answer) {
+        "naetharu.local" { $DCname = "DC01"; break }
+        "urahtean.local" { $DCname = "DC02"; break }
+    }
+    
+    $session = New-PSSession -ComputerName $DCname -Credential $adminName -ErrorAction SilentlyContinue
 
     # Check that session has been established. If not close gracefully.
     if (-not($session)) {
