@@ -1,0 +1,3 @@
+#Get all users in ad
+Get-ADUser -Filter {name -like "*"}
+
