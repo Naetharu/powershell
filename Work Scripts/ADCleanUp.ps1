@@ -7,10 +7,16 @@ $phoneCounter = 0
 $managerCounter = 0
 
 #Create CSV logging files
+$phoneSuccessLog = @()
+$phoneFailLog = @()
+$managerSuccessLog = @()
+$managerFailLog = @()
 
 
 #Part 1 - For each user in AD check to see if they have a phone number and if not then change it
 foreach ($phone in $phoneList) {
+    $success = $true
+    $failReason = ""
     $name = $phone.name
     $surname = $phone.surname
     $phoneNumber = $phone.'Phone Number'
@@ -21,13 +27,35 @@ foreach ($phone in $phoneList) {
         try {
             Set-ADUser -Identity $user -Replace @{telephoneNumber = $phoneNumber }
             $phoneCounter ++
+
+            #Log results
+            $phoneSuccess = [PSCustomObject]@{
+                Name  = "$name $surname"
+                Phone = "$phoneNumber"
+            }
+            $phoneSuccessLog += $phoneSuccess
+
         }
         catch {
             Write-Host "Failed Attempt to set ADUser telephone number."
+            $failReason = "Failed Attempt to set ADUser telephone number."
+            $success = $false
         }
     }
     else {
         Write-Host "Unable to locate user $name $surname from the phone list in AD."
+        $failReason = "Unable to locate user $name $surname from the phone list in AD."
+        $success = $false
+    }
+
+    # If failed then log
+    if (!$success) {
+        $phoneFail = [PSCustomObject]@{
+            Name   = "$name $surname"
+            Phone  = "$phoneNumber"
+            Reason = "$failReason"
+        }
+        $phoneFailLog += $phoneFail
     }
 }
 
