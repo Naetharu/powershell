@@ -1,4 +1,10 @@
-#1 Import the System.Web type from MS.net - we are going to use this to generate our
+#1 Select which network we are going to use.
+while ($true) {
+    $answer = Read-Host "Press [1] for Network-1 Highways and [2] for Network-2"
+
+    if (($answer -eq "1") -or ($answer -eq "2")) { break; }
+}
+
 
 if (Test-Connection naetharu.local) {
 
