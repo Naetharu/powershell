@@ -59,7 +59,7 @@ if (Test-Connection naetharu.local) {
         try {
             Set-ADAccountPassword -Identity $userAccount -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "$password" -Force)
             Unlock-ADAccount -Identity $userAccount 
-            Set-ADUser -1Identity $userAccount -ChangePasswordAtLogon:$true
+            Set-ADUser -Identity $userAccount -ChangePasswordAtLogon:$true
         }
         catch {
             Write-Host "Failed while updating password." -ForegroundColor Red
