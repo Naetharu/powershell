@@ -1,14 +1,14 @@
 #1 Select which network we are going to use.
 while ($true) {
-    $answer = Read-Host "Press [1] for Network-1 Highways and [2] for Network-2"
+    $domain = Read-Host "Press [1] for Network-1 Highways and [2] for Network-2"
 
-    if ($answer -eq "1") {
-        $answer = "naetharu.local"
+    if ($domain -eq "1") {
+        $domain = "naetharu.local"
         break;
     }
 
-    if ($answer -eq "2") {
-        $answer = "urahtean.local"
+    if ($domain -eq "2") {
+        $domain = "urahtean.local"
         break;
     }
 }
@@ -16,11 +16,11 @@ while ($true) {
 if (Test-Connection naetharu.local) {
 
     $adminName = Read-Host "Please enter your admin name"
-    $adminName = "$answer\$adminName"
+    $adminName = "$domain\$adminName"
 
     $DCname = ""
 
-    switch ($answer) {
+    switch ($domain) {
         "naetharu.local" { $DCname = "DC01"; break }
         "urahtean.local" { $DCname = "DC02"; break }
     }
@@ -37,7 +37,7 @@ if (Test-Connection naetharu.local) {
     Invoke-Command -Session $session -ScriptBlock {
 
         Add-Type -AssemblyName 'System.Web'
-
+        
         #2 Loop with break condition.
         while ($true) {
             #2 Ask the engineer for the user account name
@@ -50,9 +50,9 @@ if (Test-Connection naetharu.local) {
 
             #2.2 Confirm input
             Write-Host "You have entered: "$name $surname
-            $answer = Read-Host -Prompt "If this is correct please press [Y]. Else press any other key to start again."
+            $domain = Read-Host -Prompt "If this is correct please press [Y]. Else press any other key to start again."
 
-            if ($answer -eq "y") { break; } 
+            if ($domain -eq "y") { break; } 
         }
         
         #3 Locate the user in AD
