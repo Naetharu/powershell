@@ -7,6 +7,22 @@ function checkCalendar {
     Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar")
 }
 
+function removeCalendarPermission {
+    param()
+    $hostUser = Read-Host "Enter the email address for the primary account: "
+    $guestUser = Read-Host "Enter the email address for the the delegate you wish to remove: "
+
+    Remove-MailboxFolderPermission -Identity $($hostUser + ":\calendar") -User $guestUser
+}
+
+function addCalendarPermission {
+    param()
+    $hostUser = Read-Host "Enter the email address for the primary account: "
+    $guestUser = Read-Host "Enter the email address for the the delegate you wish to add as a delegate: "
+
+    Add-MailboxFolderPermission -Identity $($hostUser + ":\Calendar") -User $guestUser -AccessRights Editor -SharingPermissionFlags Delegate
+}
+
 function calendarPermissions {
     param ()
 
@@ -23,19 +39,14 @@ function calendarPermissions {
 
         switch ($answer) {
             1 { checkCalendar ; break }
-            2 { Write-Host "Option Two"; break }
-            3 { Write-Host "Option Three"; break }
+            2 { removeCalendarPermission ; break }
+            3 { addCalendarPermission; break }
             'x' {
                 $check = $false 
                 Write-Host "Option Four"; 
             }
-        }
-
-        Write-host: "Exiting now"
-            
+        }            
     }
-
-    Write-host: "Exiting now"
 }
 
 # ============================================== Create Online Session ================================================#
