@@ -12,8 +12,6 @@ $phoneFailLog = @()
 $managerSuccessLog = @()
 $managerFailLog = @()
 
-
-$
 #Part 1 - For each user in AD check to see if they have a phone number and if not then change it
 foreach ($phone in $phoneList) {
     $success = $true
@@ -35,7 +33,6 @@ foreach ($phone in $phoneList) {
                 Phone = "$phoneNumber"
             }
             $phoneSuccessLog += $phoneSuccess
-
         }
         catch {
             Write-Host "Failed Attempt to set ADUser telephone number."
