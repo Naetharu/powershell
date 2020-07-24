@@ -8,8 +8,8 @@
 
 
 
-function LeaveSession {
-    param ()
+function calendarPermissions {
+    param ($email)
     
 }
 

@@ -1,6 +1,12 @@
 # ============================================= Functions for Common Tasks ============================================#
 
 # -------------- Calender Permission Issues --------------- #
+function checkCalendar {
+    param()
+    $email = Read-Host "Enter the email address: "
+    Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar")
+}
+
 function calendarPermissions {
     param ()
 
@@ -16,12 +22,20 @@ function calendarPermissions {
         $answer = Read-Host "Please make a selection: "
 
         switch ($answer) {
-            1 { Write-Host "Option One"; break }
+            1 { checkCalendar ; break }
             2 { Write-Host "Option Two"; break }
             3 { Write-Host "Option Three"; break }
-            4 { Write-Host "Option Four"; $check = $false }
+            'x' {
+                $check = $false 
+                Write-Host "Option Four"; 
+            }
         }
+
+        Write-host: "Exiting now"
+            
     }
+
+    Write-host: "Exiting now"
 }
 
 # ============================================== Create Online Session ================================================#
