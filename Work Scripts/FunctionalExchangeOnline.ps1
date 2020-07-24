@@ -4,7 +4,14 @@
 function checkCalendar {
     param()
     $email = Read-Host "Enter the email address: "
-    Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar")
+
+    try {
+        Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar")
+    }
+    catch {
+        Write-Host "Unable to locate the mailbox. Please check details." -ForegroundColor Red
+    }
+    
 }
 
 function removeCalendarPermission {
@@ -12,7 +19,13 @@ function removeCalendarPermission {
     $hostUser = Read-Host "Enter the email address for the primary account: "
     $guestUser = Read-Host "Enter the email address for the the delegate you wish to remove: "
 
-    Remove-MailboxFolderPermission -Identity $($hostUser + ":\calendar") -User $guestUser
+    try {
+        Remove-MailboxFolderPermission -Identity $($hostUser + ":\calendar") -User $guestUser
+    }
+    catch {
+        Write-Host "Unable to remove mailbox permission. Please check your email details are correct." -ForegroundColor Red
+    }
+    
 }
 
 function addCalendarPermission {
@@ -42,7 +55,13 @@ function addCalendarPermission {
         default { $accessLevel = "AvailabilityOnly"; break }
     }
 
-    Add-MailboxFolderPermission -Identity $($hostUser + ":\Calendar") -User $guestUser -AccessRights $accessLevel -SharingPermissionFlags Delegate -WhatIf
+    try {
+        Add-MailboxFolderPermission -Identity $($hostUser + ":\Calendar") -User $guestUser -AccessRights $accessLevel -SharingPermissionFlags Delegate
+    }
+    catch {
+        Write-Host "Unable to update permissions as requested. Please check details before trying again." -ForegroundColor Red
+    }
+    
 }
 
 function calendarPermissions {
