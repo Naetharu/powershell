@@ -1,6 +1,7 @@
-# ============================================= Functions for Common Tasks ============================================#
+# ============================================= Functions for Common Tasks =============================================#
 
 # -------------- Calender Permission Issues --------------- #
+
 function checkCalendar {
     param()
     $email = Read-Host "Enter the email address: "
@@ -11,7 +12,6 @@ function checkCalendar {
     catch {
         Write-Host "Unable to locate the mailbox. Please check details." -ForegroundColor Red
     }
-    
 }
 
 function removeCalendarPermission {
@@ -25,7 +25,6 @@ function removeCalendarPermission {
     catch {
         Write-Host "Unable to remove mailbox permission. Please check your email details are correct." -ForegroundColor Red
     }
-    
 }
 
 function addCalendarPermission {
@@ -52,11 +51,10 @@ function addCalendarPermission {
         3 { $accessLevel = "Contributor"; break }
         4 { $accessLevel = "Editor"; break }
         5 { Read-Host "Enter custom value []"; break }
-        default { $accessLevel = "AvailabilityOnly"; break }
     }
 
     try {
-        Add-MailboxFolderPermission -Identity $($hostUser + ":\Calendar") -User $guestUser -AccessRights $accessLevel -SharingPermissionFlags Delegate
+        Add-MailboxFolderPermission -Identity $($hostUser + ":\Calendar") -User $guestUser -AccessRights $accessLevel -WhatIf
     }
     catch {
         Write-Host "Unable to update permissions as requested. Please check details before trying again." -ForegroundColor Red
@@ -82,7 +80,7 @@ function calendarPermissions {
             1 { checkCalendar ; break }
             2 { removeCalendarPermission ; break }
             3 { addCalendarPermission; break }
-            'x' {
+            x {
                 $check = $false 
                 Write-Host "Option Four"; 
             }
@@ -103,7 +101,7 @@ Import-Module -Name AzureAD
 # Connect a PS session
 Connect-ExchangeOnline
 
-#=============================================== Options Menu for common tasks ========================================#
+#=============================================== Options Menu for common tasks =========================================#
 Write-Host "Welcome to Exchange Online - Choose your option from the following menu"
 
 while ($true) {
