@@ -4,7 +4,7 @@ Invoke-Command -Session $session -ScriptBlock {
 
     #Remove the XML files
     try{
-        Remove-Item "C:\Program Files (x86)\N-able Technologies\NcentralAsset.xml"
+        Remove-Item "C:\Program Files (x86)\N-able Technologies\NcentralAsset.xml" -WhatIf
     }
     catch{
         Write-Host "Unable to delete C:\Program Files (x86)\N-able Technologies\NcentralAsset.xml"
@@ -12,7 +12,7 @@ Invoke-Command -Session $session -ScriptBlock {
     }
     
     try{
-        Remove-Item "C:\Windows\Temp\NcentralAsset.xml"
+        Remove-Item "C:\Windows\Temp\NcentralAsset.xml" -WhatIf
     }
     catch{
         Write-Host "Unable to delete C:\Windows\Temp\NcentralAsset.xml"
@@ -38,6 +38,8 @@ Invoke-Command -Session $session -ScriptBlock {
         Write-Host "Unable to WIM class"
         Write-Host "This class may not exist"
     }
+
+    #Uninstall the software
 }
 
 # =================== THIS PART WORKS =========================================#
