@@ -51,8 +51,8 @@ foreach($user in $contractList){
 
         # Allocate OU based on office location
         Switch($office){
-            "Field"{$orgUnit = "OU=Field,OU=Domain Users,DC=Naetharu,DC=local"; break }
-            "Office"{$orgUnit = "OU=Office,OU=Domain Users,DC=Naetharu,DC=local"; break }
+            "Field"{$orgUnit = "OU=Field Users,OU=Domain Users,DC=Naetharu,DC=local"; break }
+            "Office"{$orgUnit = "OU=Office Users,OU=Domain Users,DC=Naetharu,DC=local"; break }
         }
 
         # Create the new user object based on the variables given - some more refinement needed here as we progress.

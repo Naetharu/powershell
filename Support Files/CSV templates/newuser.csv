@@ -1,14 +1,10 @@
 ﻿Employee Number,Name,Surname,Date,Contract,Description,Office
-1,Isabella,Smith,1/2/2020,Essex,Accounts Ledger,Field
-2,Jessica,Brown,1/2/2020,Corp,HR Manager,Office
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
-,,,,,,
+1,Isabella,Smith,1/2/2020,Essex,Accounts Ledger,Office
+2,Jessica,Brown,1/2/2020,Essex,HR Manager,Office
+3,Jake,Willow,1/3/2020,Essex,Senior Engineer,Office
+4,Frazer,Alexander,1/4/2020,Essex,Head of Security,Office
+5,Marcel,Dillon,1/5/2020,Essex,Bridge Engineer,Field
+6,Lucy,Yu,1/6/2020,Essex,Business Agility,Office
+7,Nina,Alton,1/7/2020,Corp,Purchasing,Office
+8,Eugene,Brothers,1/8/2020,Corp,Compliance Officer,Office
+9,Alfie,Fonze,1/9/2020,Essex,Inspector,Field

@@ -7,7 +7,7 @@ function checkCalendar {
     $email = Read-Host "Enter the email address: "
 
     try {
-        Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar")
+        Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar") -WhatIf
     }
     catch {
         Write-Host "Unable to locate the mailbox. Please check details." -ForegroundColor Red
@@ -20,7 +20,7 @@ function removeCalendarPermission {
     $guestUser = Read-Host "Enter the email address for the the delegate you wish to remove: "
 
     try {
-        Remove-MailboxFolderPermission -Identity $($hostUser + ":\calendar") -User $guestUser
+        Remove-MailboxFolderPermission -Identity $($hostUser + ":\calendar") -User $guestUser -WhatIf
     }
     catch {
         Write-Host "Unable to remove mailbox permission. Please check your email details are correct." -ForegroundColor Red

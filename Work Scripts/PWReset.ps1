@@ -84,14 +84,14 @@ if (Test-Connection naetharu.local) {
         catch {
             Write-Host "Failed while updating password." -ForegroundColor Red
             $test = "testing"
-            $test | Export-Csv -Path "C:\Users\Administrator\Desktop\PWReset Error Logs\error.csv"
+            $test | Export-Csv -Path "C:\Users\Administrator\Desktop\PWReset\logs\error.csv"
             return;
         }
         
         #5 Print results
         Write-Host "`The password has been changed successfully: `n" -ForegroundColor Red
         Write-Host "The new password is: "$password
-        $pwlog | Export-Csv -path "C:\Users\Administrator\Desktop\PWRest\logs\success.csv"
+        $pwlog | Export-Csv -path "C:\Users\Administrator\Desktop\PWReset\logs\success.csv"
     }
     Read-Host "Press enter to exit"
 }
