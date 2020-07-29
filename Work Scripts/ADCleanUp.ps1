@@ -1,6 +1,6 @@
 #Import CSV files to get the necessary data
 $phoneList = Import-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\source\PhoneList.csv"
-$managerList = Import-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\source\managerList.csv"
+$managerList = Import-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\source\ManagerList.csv"
 
 #Set counters so that we can report the total number of changes
 $phoneCounter = 0

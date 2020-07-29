@@ -7,7 +7,7 @@ function checkCalendar {
     $email = Read-Host "Enter the email address: "
 
     try {
-        Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar") -WhatIf
+        Get-EXOMailboxFolderPermission -Identity $($email + ":\calendar")
     }
     catch {
         Write-Host "Unable to locate the mailbox. Please check details." -ForegroundColor Red

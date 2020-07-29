@@ -33,8 +33,8 @@ foreach($user in $contractList){
         $accountname = "$name" + "." + "$surname"
 
         # Generate a secure password
-        $length = 16
-        $nonAlphaChars = 2
+        $length = 8
+        $nonAlphaChars = 1
         $password = [System.Web.Security.Membership]::GeneratePassword($length, $nonAlphaChars)
 
         # Create a custom PS object and store the password against the user name

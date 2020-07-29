@@ -31,7 +31,7 @@ if (Test-Connection naetharu.local) {
     if (-not($session)) {
         Write-Host "Session not established. Check your credentials and try again." -ForegroundColor Red
         Read-Host "Press Enter to Exit"
-        return;
+        exit;
     }    
 
     Invoke-Command -Session $session -ScriptBlock {
@@ -50,9 +50,9 @@ if (Test-Connection naetharu.local) {
 
             #2.2 Confirm input
             Write-Host "You have entered: "$name $surname
-            $domain = Read-Host -Prompt "If this is correct please press [Y]. Else press any other key to start again."
+            $answer = Read-Host -Prompt "If this is correct please press [Y]. Else press any other key to start again."
 
-            if ($domain -eq "y") { break; } 
+            if ($answer -eq "y") { break; } 
         }
         
         #3 Locate the user in AD
@@ -60,8 +60,8 @@ if (Test-Connection naetharu.local) {
 
         if (-not($userAccount)) {    
             Write-Host "Unable to locate account for user $name $surname" -ForegroundColor Red
-            return;
-        }    
+            exit;
+        }
 
         #4 Reset the users password
         #4.1 Generate a new password

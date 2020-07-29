@@ -19,6 +19,7 @@ foreach($user in $contractList){
 
     # Check the date that the person is due to leave
     if((Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')")){
+        Write-Host $user.'Leave Date'
         $leaveDate = [datetime]::ParseExact($user.'leave date', "dd/MM/yyyy", $null)
     }
     
@@ -79,7 +80,7 @@ foreach($user in $contractList){
 
         #3.4 - Move their account into the new OU
         try{
-            Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Accounts,OU=Domain Users,DC=Naetharu,DC=local"
+            Move-ADObject -Identity $currentUser -TargetPath "OU=Disabled Users,OU=Domain Users,DC=Naetharu,DC=local"
         }catch{
             $faillog = [PSCustomObject]@{
                 Name = $currentUser
