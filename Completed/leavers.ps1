@@ -13,15 +13,17 @@ $failedUsers = @()
 
 #3 Loop through each user and process their account
 foreach($user in $contractList){
-    $today = Get-Date
     $name = $user.name
     $surname = $user.surname
+    $today = Get-Date
+    $leaveDate = [datetime]::ParseExact($user.'leave date', "dd/MM/yyyy", $null)
 
-    # Check the date that the person is due to leave
-    if((Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')")){
-        Write-Host $user.'Leave Date'
-        $leaveDate = [datetime]::ParseExact($user.'leave date', "dd/MM/yyyy", $null)
-    }
+
+    # Check the date that the person is due to leave - Need to look to change this - no need to query AD on this point
+    #if((Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')")){
+       # Write-Host $user.'Leave Date'
+   
+    #}
     
     # Check if the person exists in AD and if their leave date is today or earlier before proceeding
     if(!(Get-ADUser -Filter "(Givenname -eq '$name') -and (Surname -eq '$surname')")){
