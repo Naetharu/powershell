@@ -1,3 +1,16 @@
+<#
+    This script imports phone numbers and manager-names from CSV files and adds them to AD
+
+    Author: James Bridge
+    Creation Date: 08/08/2020
+    Version: 1.0
+
+    Important Note - All pathing is hard coded to my lab - you will need to set paths to your
+    local enviroment before you can use this on your own DC.
+#>
+
+
+
 #Import CSV files to get the necessary data
 $phoneList = Import-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\source\PhoneList.csv"
 $managerList = Import-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\source\ManagerList.csv"
@@ -14,15 +27,21 @@ $managerFailLog = @()
 
 #Part 1 - For each user in AD check to see if they have a phone number and if not then change it
 foreach ($phone in $phoneList) {
+
+    # Set variables for clarity and ease of access
     $success = $true
     $failReason = ""
     $name = $phone.name
     $surname = $phone.surname
     $phoneNumber = $phone.'Phone Number'
 
+    # Get user object based on first and last name
     $user = Get-ADUser -Filter "((Givenname -eq '$name') -and (Surname -eq '$surname'))" -Properties "telephoneNumber"    
     
+    # Check user exists (if line 39 fails then $user will have a null value and so the if statement will return false)
     if ($user) {
+
+        # Attempt to make the changes to phone number and handle any errors via the catch block
         try {
             Set-ADUser -Identity $user -Replace @{telephoneNumber = $phoneNumber }
             $phoneCounter ++
@@ -57,8 +76,10 @@ foreach ($phone in $phoneList) {
     }
 }
 
-
+# Part 2 - same as part 1 but this time we address the line manager setting in AD
 foreach ($user in $managerList) {
+
+    # Start by setting the variables
     $success = $true
     $failReason = ""
     $name = $user.name
@@ -66,9 +87,11 @@ foreach ($user in $managerList) {
     $managerName = $user.'manager name'
     $managerSurname = $user.'manager surname'
       
+    # As above but this time we get both the user and the line manager object.
     $user = Get-ADUser -Filter "((Givenname -eq '$name') -and (Surname -eq '$surname'))" -Properties "Manager" 
     $manager = Get-ADUser -Filter "((Givenname -eq '$managerName') -and (Surname -eq '$managerSurname'))"
     
+    # And here we test that both are non-null values before proceeding.
     if ($user -and $manager) {
         try {
             Set-ADUser -Identity $user -Replace @{manager = $manager.distinguishedName }
@@ -115,15 +138,15 @@ foreach ($user in $managerList) {
         $managerFailLog += $managerFail
     }
 }
-#Part 2 = For each user in AD add in the user's line manager
 
-
+# Finally we push out our logs for both phone and line manager work so that we can audit our progress.
 $phoneSuccessLog | Export-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\logs\phoneSuccessLog.csv"
 $phoneFailLog | Export-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\logs\phoneFailLog.csv"
 
 $managerSuccessLog | Export-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\logs\managerSuccessLog.csv"
 $managerFailLog | Export-Csv -Path "C:\Users\Administrator\Desktop\ADCleanUp\logs\managerFailLog.csv"
 
+# And as a last touch we print a summery of how many accounts have been updated to the screen so we have quick glance view of our success.
 Write-Host "Total Phone Numbers Set: "$phoneCounter
 Write-Host "Total Managers added: "$managerCounter
 
